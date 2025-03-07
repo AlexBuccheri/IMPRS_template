@@ -1,7 +1,7 @@
 /* Function, derivative and results definitions for each implementation.
  */
-#ifndef IMPRES_CG_H
-#define IMPRES_CG_H
+#ifndef IMPRS_CG_H
+#define IMPRS_CG_H
 
 #include <functional>
 
