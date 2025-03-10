@@ -1,2 +1,5 @@
 # Build directories
 cmake-build-debug
+
+# VS Code
+*.mod
