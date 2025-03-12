@@ -15,6 +15,7 @@ VENV_PATH := ../venv
 
 # Production installation
 install: pyproject.toml
+	[ -d $(VENV_PATH) ] || python3 -m venv $(VENV_PATH)
 	. $(VENV_PATH)/bin/activate
 	python -m pip install --upgrade pip setuptools wheel
 	python -m pip install .
@@ -22,6 +23,7 @@ install: pyproject.toml
 # Development installation
 # Install dependencies specified in .dev of pyproject.toml
 install-dev: pyproject.toml
+	[ -d $(VENV_PATH) ] || python3 -m venv $(VENV_PATH)
 	. $(VENV_PATH)/bin/activate
 	python -m pip install --upgrade pip setuptools wheel
 	python -m pip install -e ".[dev]"
