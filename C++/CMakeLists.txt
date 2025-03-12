@@ -16,6 +16,7 @@ set(CMAKE_CXX_EXTENSIONS ON)
 ]==============================================================================================]
 
 option(ENABLE_UNITTESTS "Build with unit test support" ON)
+option(FETCH_CONTENT_CATCH2 "Use FetchContent to get Catch2" OFF)
 
 
 #[==============================================================================================[
@@ -51,14 +52,28 @@ include_directories(${ARMADILLO_INCLUDE_DIRS})
 
 if (ENABLE_UNITTESTS)
     # https://github.com/catchorg/Catch2/blob/devel/docs/cmake-integration.md
-    find_package(Catch2 3 REQUIRED)
+    if (FETCH_CONTENT_CATCH2)
+          Include(FetchContent)
 
-    message("-- Catch2 library found")
-    get_target_property(CATCH2_INCLUDE_DIRS Catch2::Catch2 INTERFACE_INCLUDE_DIRECTORIES)
-    message("     CATCH2_INCLUDE_DIRS : ${CATCH2_INCLUDE_DIRS}")
+          FetchContent_Declare(
+              Catch2
+              GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+              GIT_TAG        v3.4.0
+          )
 
-    get_target_property(CATCH2_LIBS Catch2::Catch2 LOCATION)
-    message("     CATCH2_LIBS        : ${CATCH2_LIBS}")
+          FetchContent_MakeAvailable(Catch2)
+
+          get_target_property(CATCH2_INCLUDE_DIRS Catch2::Catch2 INTERFACE_INCLUDE_DIRECTORIES)
+          message("     CATCH2_INCLUDE_DIRS : ${CATCH2_INCLUDE_DIRS}")
+      else ()
+          find_package(Catch2 3 REQUIRED)
+          message("-- Catch2 library found")
+          get_target_property(CATCH2_INCLUDE_DIRS Catch2::Catch2 INTERFACE_INCLUDE_DIRECTORIES)
+          message("     CATCH2_INCLUDE_DIRS : ${CATCH2_INCLUDE_DIRS}")
+
+          get_target_property(CATCH2_LIBS Catch2::Catch2 LOCATION)
+          message("     CATCH2_LIBS        : ${CATCH2_LIBS}")
+    endif()
 endif ()
 
 # Source location
