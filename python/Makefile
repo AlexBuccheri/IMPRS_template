@@ -8,13 +8,14 @@ VENV_PATH := ../venv
 .ONESHELL:
 
 # Default command for `make`
-.DEFAULT_GOAL: install-dev
+.DEFAULT_GOAL := install-dev
 
 # Targets that do not correspond to files
 .PHONY: install install-dev format check-format cov
 
 # Production installation
 install: pyproject.toml
+	[ -d $(VENV_PATH) ] || python3 -m venv $(VENV_PATH)
 	. $(VENV_PATH)/bin/activate
 	python -m pip install --upgrade pip setuptools wheel
 	python -m pip install .
@@ -22,6 +23,7 @@ install: pyproject.toml
 # Development installation
 # Install dependencies specified in .dev of pyproject.toml
 install-dev: pyproject.toml
+	[ -d $(VENV_PATH) ] || python3 -m venv $(VENV_PATH)
 	. $(VENV_PATH)/bin/activate
 	python -m pip install --upgrade pip setuptools wheel
 	python -m pip install -e ".[dev]"
