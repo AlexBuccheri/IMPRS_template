@@ -8,7 +8,7 @@ VENV_PATH := ../venv
 .ONESHELL:
 
 # Default command for `make`
-.DEFAULT_GOAL: install-dev
+.DEFAULT_GOAL := install-dev
 
 # Targets that do not correspond to files
 .PHONY: install install-dev format check-format cov
