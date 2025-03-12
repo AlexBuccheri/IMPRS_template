@@ -3,6 +3,7 @@ from collections.abc import Callable
 from typing import List, Optional, Tuple
 
 import numpy as np
+import numpy.typing as npt
 
 from IMPRSPython.func_def import FuncType, DerFuncType, CGResultType
 
@@ -13,7 +14,7 @@ class NLConjugateGradient(ABC):
         self,
         f: FuncType,
         df: DerFuncType,
-        x0: np.ndarray,
+        x0: npt.NDArray,
         max_iter: Optional[int] = 500,
         tol: Optional[float] = 1.0e-6,
         hooks: Optional[List[Callable]] = None,
@@ -29,15 +30,19 @@ class NLConjugateGradient(ABC):
         # Initialise variable
         self.x = np.copy(x0)
         # Compute gradient
-        self.g = self.df(self.x)
+        self.g: npt.NDArray = self.df(self.x)
         # Initialise step size
-        self.alpha = 1
+        self.alpha: float = 1
         # Zero the search direction
-        self.d = 0
-        # Zero coefficient or approx inv Hessian
-        self.hess = 0
+        self.d: npt.NDArray = np.empty_like(self.x)
+        # Zero coefficient or approx inv Hessian (the latter with shape (x.size, x.size)
+        self.hess: float | npt.NDArray = 0
         # Zero iteration counter
         self.k = 0
+
+        if not (self.x.size == self.g.size == self.d.size):
+            raise ValueError("Variable 'x', gradient 'g' and search direction 'd' must"
+                             "all have the same size")
 
     @abstractmethod
     def initialise_search_direction(self) -> float:
@@ -59,14 +64,14 @@ class NLConjugateGradient(ABC):
         pass
 
     @abstractmethod
-    def update_hessian_or_coefficient(self) -> float | np.ndarray:
+    def update_hessian_or_coefficient(self) -> float | npt.NDArray:
         """Depending on the choice of algorithm up the coefficient or approximate
         inverse Hessian (both represented by self.hess).
         """
         pass
 
     @abstractmethod
-    def update_search_direction(self) -> np.ndarray:
+    def update_search_direction(self) -> npt.NDArray:
         """Update the search direction, self.d
         This should be mathematically equivalent to initialise_search_direction,
         but use self.g_next, as the vectors x and gradient g updated AFTER the search direction.
