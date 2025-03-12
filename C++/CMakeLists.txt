@@ -51,14 +51,25 @@ include_directories(${ARMADILLO_INCLUDE_DIRS})
 
 if (ENABLE_UNITTESTS)
     # https://github.com/catchorg/Catch2/blob/devel/docs/cmake-integration.md
-    find_package(Catch2 3 REQUIRED)
-
-    message("-- Catch2 library found")
-    get_target_property(CATCH2_INCLUDE_DIRS Catch2::Catch2 INTERFACE_INCLUDE_DIRECTORIES)
-    message("     CATCH2_INCLUDE_DIRS : ${CATCH2_INCLUDE_DIRS}")
-
-    get_target_property(CATCH2_LIBS Catch2::Catch2 LOCATION)
-    message("     CATCH2_LIBS        : ${CATCH2_LIBS}")
+    find_package(Catch2 3)
+    if (NOT Catch2_FOUND)
+        message("Catch2 version 3 was not found. cmake will fetch from Github instead")
+        Include(FetchContent)
+        FetchContent_Declare(
+                Catch2
+                GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+                GIT_TAG        v3.4.0
+        )
+        FetchContent_MakeAvailable(Catch2)
+        get_target_property(CATCH2_INCLUDE_DIRS Catch2::Catch2 INTERFACE_INCLUDE_DIRECTORIES)
+        message("     CATCH2_INCLUDE_DIRS : ${CATCH2_INCLUDE_DIRS}")
+    else ()
+        message("-- Catch2 library found")
+        get_target_property(CATCH2_INCLUDE_DIRS Catch2::Catch2 INTERFACE_INCLUDE_DIRECTORIES)
+        message("     CATCH2_INCLUDE_DIRS : ${CATCH2_INCLUDE_DIRS}")
+        get_target_property(CATCH2_LIBS Catch2::Catch2 LOCATION)
+        message("     CATCH2_LIBS        : ${CATCH2_LIBS}")
+    endif ()
 endif ()
 
 # Source location
